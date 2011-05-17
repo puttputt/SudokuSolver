@@ -1,0 +1,195 @@
+/*
+ * Sudoku main class
+ */
+package sudoku;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.Color;
+
+import javax.swing.*;
+
+public class Sudoku extends JApplet {
+
+	private static final long serialVersionUID = 1L;
+	private JTable grid = new JTable(9, 9);
+	private Grid1 game = new Grid1();
+
+	public void init() {
+		// Execute a job on the event-dispatching thread; creating this applet's
+		// GUI.
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					// we needed to new all the entries otherwise we could
+					// get the nullexceptionerror...
+					reset();
+					// game.Import("../easy.txt");
+					// fillValues();
+					setSize(400, 280);
+					grid.setRowHeight(25);
+					grid.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1,
+							Color.BLACK));
+
+					// grid.setBorder(BorderFactory.createMatteBorder(0, 0, 0,
+					// 3, Color.RED));
+
+					JButton submit = new JButton("Solve!");
+					submit.setSize(80, 40);
+					submit.setLocation(80, 230);
+					submit.addActionListener(solveAction);
+					
+					JButton reset = new JButton("Reset");
+					reset.setSize(80, 40);
+					reset.setLocation(160, 230);
+					reset.addActionListener(resetAction);
+					
+					JButton loadExample = new JButton("Load Example");
+					loadExample.setSize(130, 40);
+					loadExample.setLocation(240, 230);
+					loadExample.addActionListener(load);
+					
+					add(loadExample);
+					add(reset);
+					add(submit);
+					add(grid);
+				}
+
+			});
+		} catch (Exception e) {
+			System.err.println("createGUI didn't complete successfully");
+		}
+	}
+	/*
+	 * This is the ActionListener for when the user presses the RESET button
+	 */
+	ActionListener resetAction = new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			reset();
+
+		}
+	};
+	
+	/*
+	 * This is the ActionListener for when the user presses the LOAD button
+	 */
+	ActionListener load = new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			game.Import("..\\medium.txt");
+			fillValues();
+		}
+	};
+
+	/**
+	 * It gets the values from the table and inserts them into the game variable
+	 * (we need some method to check the values as well if they're numerical or
+	 * not & etc...)
+	 * 
+	 * THIS METHOD SHOULD BE CALLED whenever the user presses SOLVE button
+	 */
+	public void getValuesFromTableToGame() {
+		int k = 0;
+		String x;
+		Integer x1;
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				x = grid.getValueAt(i, j).toString();
+				if (x.isEmpty()) {
+					
+					game.getGrid().get(k).setValue(0);
+				} else {
+					x1 = Integer.parseInt(x);
+
+					if (!game.checkCol(k, x1) && !game.checkRow(k, x1)
+							&& !game.CheckGrid(k, x1)) {
+						game.getGrid().get(k).setValue(x1);
+						game.getGrid().get(k).setPermanent(true);
+						game.getGrid().get(k).getPossibilities().clear();
+						game.Update(k);
+						game.setCount(game.getCount() + 1);
+					} else {
+						System.out.println("value not possible");
+						game.getGrid().get(k).setValue(0);
+					}
+
+				}
+				k++;
+			}
+		}
+	}
+
+	ActionListener solveAction = new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
+			getValuesFromTableToGame();
+			game.printGrid();
+<<<<<<< .mine
+			/*for (int i = 0; i <81; i++){
+				System.out.println( i + " = " + game.getGrid().get(i).getPossibilities());
+			}*/
+=======
+>>>>>>> .r189
+			game.SimpleFillValuesRecursive();
+<<<<<<< .mine
+			/*for (int i = 0; i <81; i++){
+				System.out.println( i + " = " + game.getGrid().get(i).getPossibilities());
+			}*/
+=======
+>>>>>>> .r189
+			game.printGrid();
+			fillValues();
+
+		}
+	};
+
+	public void fillValues() {
+		int k = 0;
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (game.getGrid().get(k).getValue() != 0) {
+					grid.getModel().setValueAt(
+							game.getGrid().get(k).getValue(), i, j);
+				}
+				++k;
+			}
+		}
+	}
+
+	public void reset() {
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				grid.setValueAt(new String(), i, j);
+			}
+		}
+	}
+
+	public void main(String[] args) {
+		// init();
+		// Grid1 test = new Grid1();
+		// test.Import("medium.txt");
+		// test.printGrid();
+		// test.SimpleFillValuesRecursive();
+		// Grid1 test2 = new Grid1(test);
+
+		// test2.printGrid();
+		// System.out.println();
+		// test.printGrid();
+		// for (int i = 0; i < 81; i++) {
+		// System.out.println("Possibilities " + i + " = "
+		// + test.getGrid().get(i).getPossibilities());
+		// }
+	}
+
+	/*
+	 * Checks to see if the puzzle is solved NOTE: THIS WILL ONLY WORK ON THE
+	 * MAIN GRID it only checks to see if a value exists in every slot, not the
+	 * actual validity of the puzzle
+	 */
+
+}
